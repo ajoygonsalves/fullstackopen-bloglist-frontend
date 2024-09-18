@@ -10,7 +10,10 @@ const Login = ({ setUser }) => {
     try {
       const user = await loginUser({ username, password });
       if (user && user.token) {
+        window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
         setUser(user);
+        setUsername("");
+        setPassword("");
       }
     } catch (error) {
       console.error("Login failed:", error);
