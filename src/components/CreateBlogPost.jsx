@@ -1,12 +1,14 @@
 import { createBlogPost } from "../services/blogs";
 import { useState } from "react";
-
+import { useNotification } from "../contexts/NotificationContext";
 // Create a component for creating a new blog post
 
 const CreateBlogPost = ({ user, fetchBlogs }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
+
+  const { showNotification } = useNotification();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -16,6 +18,9 @@ const CreateBlogPost = ({ user, fetchBlogs }) => {
       setAuthor("");
       setUrl("");
       fetchBlogs();
+      showNotification(
+        `a new blog ${title} by ${author} with URL ${url} added`
+      );
     } catch (error) {
       console.error("Failed to create blog post:", error);
     }

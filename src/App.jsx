@@ -4,6 +4,8 @@ import Login from "./components/Login";
 import { useEffect } from "react";
 import { getAll } from "./services/blogs";
 import CreateBlogPost from "./components/CreateBlogPost";
+import { NotificationProvider } from "./contexts/NotificationContext";
+import "./styles/index.css";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -38,23 +40,25 @@ const App = () => {
   };
 
   return (
-    <div>
-      {user === null ? (
-        <Login setUser={setUser} />
-      ) : (
-        <div>
-          <h2>blogs</h2>
+    <NotificationProvider>
+      <div>
+        {user === null ? (
+          <Login setUser={setUser} />
+        ) : (
           <div>
-            <p>{user.username} is logged in</p>
-            <button onClick={handleLogout}>logout</button>
+            <h2>blogs</h2>
+            <div>
+              <p>{user.username} is logged in</p>
+              <button onClick={handleLogout}>logout</button>
+            </div>
+            {blogs.map((blog) => (
+              <Blog key={blog.id} blog={blog} />
+            ))}
+            <CreateBlogPost user={user} fetchBlogs={fetchBlogs} />
           </div>
-          {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
-          ))}
-          <CreateBlogPost user={user} fetchBlogs={fetchBlogs} />
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </NotificationProvider>
   );
 };
 

@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { loginUser } from "../services/users";
+import { useNotification } from "../contexts/NotificationContext";
 
 const Login = ({ setUser }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const { showNotification } = useNotification();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -12,12 +15,15 @@ const Login = ({ setUser }) => {
       if (user && user.token) {
         window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
         setUser(user);
+        showNotification(`${user.username} logged in`);
         setUsername("");
         setPassword("");
+      } else {
+        showNotification("Invalid username or password", "error");
       }
     } catch (error) {
       console.error("Login failed:", error);
-      // Handle login error (e.g., show error message)
+      showNotification("Invalid username or password", "error");
     }
   };
 
