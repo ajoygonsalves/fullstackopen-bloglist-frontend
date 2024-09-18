@@ -9,7 +9,9 @@ const Login = ({ setUser }) => {
     e.preventDefault();
     try {
       const user = await loginUser({ username, password });
-      setUser(user);
+      if (user && user.token) {
+        setUser(user);
+      }
     } catch (error) {
       console.error("Login failed:", error);
       // Handle login error (e.g., show error message)

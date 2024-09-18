@@ -29,6 +29,10 @@ const App = () => {
       ) : (
         <div>
           <h2>blogs</h2>
+          <div>
+            <p>{user.username} is logged in</p>
+            <button onClick={() => setUser(null)}>logout</button>
+          </div>
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />
           ))}
