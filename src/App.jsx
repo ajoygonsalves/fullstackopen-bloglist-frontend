@@ -3,6 +3,7 @@ import Blog from "./components/Blog";
 import Login from "./components/Login";
 import { useEffect } from "react";
 import { getAll } from "./services/blogs";
+import CreateBlogPost from "./components/CreateBlogPost";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -14,18 +15,19 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
     }
-  }, []); // Empty dependency array means this effect runs once on component mount
+  }, []);
+
+  const fetchBlogs = async () => {
+    try {
+      const blogs = await getAll(user);
+      setBlogs(blogs);
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+    }
+  };
 
   useEffect(() => {
     if (user) {
-      const fetchBlogs = async () => {
-        try {
-          const blogs = await getAll(user);
-          setBlogs(blogs);
-        } catch (error) {
-          console.error("Error fetching blogs:", error);
-        }
-      };
       fetchBlogs();
     }
   }, [user]);
@@ -49,6 +51,7 @@ const App = () => {
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />
           ))}
+          <CreateBlogPost user={user} fetchBlogs={fetchBlogs} />
         </div>
       )}
     </div>

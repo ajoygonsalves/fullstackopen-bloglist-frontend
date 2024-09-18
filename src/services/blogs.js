@@ -15,4 +15,21 @@ const getAll = async (user) => {
   }
 };
 
-export { getAll };
+const createBlogPost = async ({ title, author, url, user }) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+        "Content-Type": "application/json",
+      },
+    };
+    const blogData = { title, author, url };
+    const response = await axios.post(baseUrl, blogData, config);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating blog post:", error);
+    throw error;
+  }
+};
+
+export { getAll, createBlogPost };
