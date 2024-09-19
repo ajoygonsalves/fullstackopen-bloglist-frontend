@@ -7,7 +7,7 @@ const CreateBlogPost = ({ user, fetchBlogs }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
-
+  const [visible, setVisible] = useState(false);
   const { showNotification } = useNotification();
 
   const handleSubmit = async (event) => {
@@ -25,6 +25,18 @@ const CreateBlogPost = ({ user, fetchBlogs }) => {
       console.error("Failed to create blog post:", error);
     }
   };
+
+  const toggleVisibility = () => {
+    setVisible(!visible);
+  };
+
+  if (!visible) {
+    return (
+      <div>
+        <button onClick={toggleVisibility}>Create new blog post</button>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -60,6 +72,9 @@ const CreateBlogPost = ({ user, fetchBlogs }) => {
           />
         </div>
         <button type="submit">Create</button>
+        <button type="button" onClick={toggleVisibility}>
+          Cancel
+        </button>
       </form>
     </div>
   );
