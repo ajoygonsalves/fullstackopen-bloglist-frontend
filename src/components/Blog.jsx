@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { updateLikes, deleteBlog } from "../services/blogs";
+import PropTypes from "prop-types";
 
 const Blog = ({ blog, user, fetchBlogs }) => {
-  console.log(blog);
   // Add inline styling to the blog post
   const blogStyle = {
     paddingTop: 10,
@@ -69,6 +69,12 @@ const Blog = ({ blog, user, fetchBlogs }) => {
       )}
     </div>
   );
+};
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
+  fetchBlogs: PropTypes.func.isRequired,
 };
 
 export default Blog;
