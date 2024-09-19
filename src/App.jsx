@@ -51,14 +51,17 @@ const App = () => {
               <p>{user.username} is logged in</p>
               <button onClick={handleLogout}>logout</button>
             </div>
-            {blogs.map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                user={user}
-                fetchBlogs={fetchBlogs}
-              />
-            ))}
+            {/* sort blogs by likes */}
+            {blogs
+              .sort((a, b) => b.likes - a.likes)
+              .map((blog) => (
+                <Blog
+                  key={blog.id}
+                  blog={blog}
+                  user={user}
+                  fetchBlogs={fetchBlogs}
+                />
+              ))}
             <CreateBlogPost user={user} fetchBlogs={fetchBlogs} />
             <button onClick={() => console.log(user)}>Display User</button>
           </div>
