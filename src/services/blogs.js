@@ -47,4 +47,19 @@ const updateLikes = async (blog, user) => {
   }
 };
 
-export { getAll, createBlogPost, updateLikes };
+const deleteBlog = async (id, user) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    };
+    const response = await axios.delete(`${baseUrl}/${id}`, config);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting blog:", error);
+    throw error;
+  }
+};
+
+export { getAll, createBlogPost, updateLikes, deleteBlog };

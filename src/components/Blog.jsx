@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { updateLikes } from "../services/blogs";
+import { updateLikes, deleteBlog } from "../services/blogs";
 
 const Blog = ({ blog, user, fetchBlogs }) => {
+  console.log(blog);
   // Add inline styling to the blog post
   const blogStyle = {
     paddingTop: 10,
@@ -30,6 +31,16 @@ const Blog = ({ blog, user, fetchBlogs }) => {
     }
   };
 
+  const handleRemove = async () => {
+    try {
+      window.confirm(`Remove blog ${blog.title} by ${blog.author}?`);
+      await deleteBlog(blog.id, user);
+      await fetchBlogs();
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+    }
+  };
+
   // make sure the toggle button is on the right side of the blog post
   const toggleButtonStyle = {
     display: "flex",
@@ -51,6 +62,9 @@ const Blog = ({ blog, user, fetchBlogs }) => {
             <button onClick={handleLike}>like</button>
           </p>
           <p>author: {blog.author}</p>
+          {blog.user.username === user.username && (
+            <button onClick={handleRemove}>remove</button>
+          )}
         </div>
       )}
     </div>
