@@ -32,4 +32,19 @@ const createBlogPost = async ({ title, author, url, user }) => {
   }
 };
 
-export { getAll, createBlogPost };
+const updateLikes = async (blog, user) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    };
+    const response = await axios.put(`${baseUrl}/${blog.id}`, blog, config);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating likes:", error);
+    throw error;
+  }
+};
+
+export { getAll, createBlogPost, updateLikes };
