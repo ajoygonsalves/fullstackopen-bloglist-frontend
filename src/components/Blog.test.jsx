@@ -3,12 +3,27 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Blog from "./Blog";
+import CreateBlogPost from "./CreateBlogPost";
 import { vi } from "vitest";
+import { NotificationProvider } from "../contexts/NotificationContext";
+import { createBlogPost } from "../services/blogs";
 
-// Mock the updateLikes function
+// Mock the createBlogPost function
 vi.mock("../services/blogs", () => ({
+  createBlogPost: vi.fn(),
   updateLikes: vi.fn(),
 }));
+
+// Mock the useNotification hook
+vi.mock("../contexts/NotificationContext", async () => {
+  const actual = await vi.importActual("../contexts/NotificationContext");
+  return {
+    ...actual,
+    useNotification: () => ({
+      showNotification: vi.fn(),
+    }),
+  };
+});
 
 test("renders blog title and author, but not URL or likes by default", () => {
   const blog = {
@@ -92,4 +107,41 @@ test("if like button is clicked twice, event handler is called twice", async () 
 
   // Check if the event handler was called twice
   expect(mockHandler.mock.calls).toHaveLength(2);
+});
+
+test("CreateBlogPost calls event handler with correct details when new blog is created", async () => {
+  const mockFetchBlogs = vi.fn();
+  const user = { username: "testuser" };
+  const userInteract = userEvent.setup();
+
+  render(
+    <NotificationProvider>
+      <CreateBlogPost user={user} fetchBlogs={mockFetchBlogs} />
+    </NotificationProvider>
+  );
+
+  // Click the "Create new blog post" button to show the form
+  const createButton = screen.getByText("Create new blog post");
+  await userInteract.click(createButton);
+
+  const titleInput = screen.getByLabelText("Title:");
+  const authorInput = screen.getByLabelText("Author:");
+  const urlInput = screen.getByLabelText("URL:");
+  const submitButton = screen.getByText("Create");
+
+  await userInteract.type(titleInput, "Test Blog Title");
+  await userInteract.type(authorInput, "Test Author");
+  await userInteract.type(urlInput, "http://testblog.com");
+
+  await userInteract.click(submitButton);
+
+  expect(createBlogPost).toHaveBeenCalledTimes(1);
+  expect(createBlogPost).toHaveBeenCalledWith({
+    title: "Test Blog Title",
+    author: "Test Author",
+    url: "http://testblog.com",
+    user: user,
+  });
+
+  expect(mockFetchBlogs).toHaveBeenCalledTimes(1);
 });
