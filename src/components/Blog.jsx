@@ -50,14 +50,15 @@ const Blog = ({ blog, user, fetchBlogs }) => {
   return (
     <div style={blogStyle}>
       <div style={toggleButtonStyle}>
-        {blog.title}
+        <span className="blog-title">{blog.title}</span>
+        <span className="blog-author">{blog.author}</span>
         <button onClick={toggleVisibility}>{visible ? "hide" : "view"}</button>
       </div>
 
       {visible && (
-        <div>
-          <p>{blog.url}</p>
-          <p>
+        <div className="blog-details">
+          <p className="blog-url">{blog.url}</p>
+          <p className="blog-likes">
             likes: {blog.likes}
             <button onClick={handleLike}>like</button>
           </p>
