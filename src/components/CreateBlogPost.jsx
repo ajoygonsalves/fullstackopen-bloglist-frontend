@@ -1,30 +1,38 @@
 import { createBlogPost } from "../services/blogs";
 import { useState } from "react";
 import { useNotification } from "../contexts/NotificationContext";
-// Create a component for creating a new blog post
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const CreateBlogPost = ({ user, fetchBlogs }) => {
+const CreateBlogPost = ({ user }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
   const [visible, setVisible] = useState(false);
   const { showNotification } = useNotification();
+  const queryClient = useQueryClient();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      await createBlogPost({ title, author, url, user });
+  const createBlogMutation = useMutation({
+    mutationFn: createBlogPost,
+    onSuccess: (newBlog) => {
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+      showNotification(
+        `a new blog ${newBlog.title} by ${newBlog.author} added`,
+        "success",
+      );
       setTitle("");
       setAuthor("");
       setUrl("");
-      fetchBlogs();
-      showNotification(
-        `a new blog ${title} by ${author} with URL ${url} added`,
-        "success",
-      );
-    } catch (error) {
+      setVisible(false);
+    },
+    onError: (error) => {
+      showNotification("Failed to create blog post", "error");
       console.error("Failed to create blog post:", error);
-    }
+    },
+  });
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    createBlogMutation.mutate({ title, author, url, user });
   };
 
   const toggleVisibility = () => {

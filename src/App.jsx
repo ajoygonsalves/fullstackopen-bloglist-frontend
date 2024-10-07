@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import Login from "./components/Login";
-import { useEffect } from "react";
-import { getAll } from "./services/blogs";
 import CreateBlogPost from "./components/CreateBlogPost";
 import { NotificationProvider } from "./contexts/NotificationContext";
 import "./styles/index.css";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getAll } from "./services/blogs";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
@@ -19,25 +19,24 @@ const App = () => {
     }
   }, []);
 
-  const fetchBlogs = async () => {
-    try {
-      const blogs = await getAll(user);
-      setBlogs(blogs);
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (user) {
-      fetchBlogs();
-    }
-  }, [user]);
+  const {
+    data: blogs,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["blogs"],
+    queryFn: () => getAll(user),
+    enabled: !!user,
+  });
 
   const handleLogout = () => {
     setUser(null);
     window.localStorage.removeItem("loggedBlogAppUser");
+    queryClient.clear();
   };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error fetching blogs</div>;
 
   return (
     <NotificationProvider>
@@ -51,19 +50,12 @@ const App = () => {
               <p>{user.username} is logged in</p>
               <button onClick={handleLogout}>logout</button>
             </div>
-            {/* sort blogs by likes */}
             {blogs
               .sort((a, b) => b.likes - a.likes)
               .map((blog) => (
-                <Blog
-                  key={blog.id}
-                  blog={blog}
-                  user={user}
-                  fetchBlogs={fetchBlogs}
-                />
+                <Blog key={blog.id} blog={blog} user={user} />
               ))}
-            <CreateBlogPost user={user} fetchBlogs={fetchBlogs} />
-            <button onClick={() => console.log(user)}>Display User</button>
+            <CreateBlogPost user={user} />
           </div>
         )}
       </div>

@@ -32,7 +32,7 @@ const createBlogPost = async ({ title, author, url, user }) => {
   }
 };
 
-const updateLikes = async (blog, user) => {
+const updateLikes = async ({ blog, user }) => {
   try {
     const config = {
       headers: {
@@ -47,7 +47,7 @@ const updateLikes = async (blog, user) => {
   }
 };
 
-const deleteBlog = async (id, user) => {
+const deleteBlog = async ({ id, user }) => {
   try {
     const config = {
       headers: {

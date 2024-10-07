@@ -1,43 +1,41 @@
 import { useState } from "react";
 import { updateLikes, deleteBlog } from "../services/blogs";
 import PropTypes from "prop-types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const Blog = ({ blog, user, fetchBlogs }) => {
-  // Add inline styling to the blog post
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: "solid",
-    borderWidth: 1,
-    marginBottom: 5,
-  };
-
+const Blog = ({ blog, user }) => {
   const [visible, setVisible] = useState(false);
+  const queryClient = useQueryClient();
+
+  const updateLikesMutation = useMutation({
+    mutationFn: updateLikes,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+    },
+  });
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: deleteBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+    },
+  });
 
   const toggleVisibility = () => {
     setVisible(!visible);
   };
 
-  const handleLike = async () => {
-    try {
-      const updatedBlog = {
-        id: blog.id,
-        likes: blog.likes + 1,
-      };
-      await updateLikes(updatedBlog, user);
-      await fetchBlogs();
-    } catch (error) {
-      console.error("Error updating likes:", error);
-    }
+  const handleLike = () => {
+    const updatedBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+    };
+    updateLikesMutation.mutate({ blog: updatedBlog, user });
   };
 
-  const handleRemove = async () => {
-    try {
-      window.confirm(`Remove blog ${blog.title} by ${blog.author}?`);
-      await deleteBlog(blog.id, user);
-      await fetchBlogs();
-    } catch (error) {
-      console.error("Error deleting blog:", error);
+  const handleRemove = () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      deleteBlogMutation.mutate({ id: blog.id, user });
     }
   };
 
@@ -48,9 +46,9 @@ const Blog = ({ blog, user, fetchBlogs }) => {
   };
 
   return (
-    <div style={blogStyle}>
+    <div>
       <div style={toggleButtonStyle}>
-        <span className="blog-title">{blog.title}</span>
+        <span className="blog-title">{blog.title} - </span>
         <span className="blog-author">{blog.author}</span>
         <button onClick={toggleVisibility}>{visible ? "hide" : "view"}</button>
       </div>
@@ -75,7 +73,6 @@ const Blog = ({ blog, user, fetchBlogs }) => {
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
-  fetchBlogs: PropTypes.func.isRequired,
 };
 
 export default Blog;
