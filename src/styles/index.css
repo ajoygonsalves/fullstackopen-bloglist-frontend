@@ -19,3 +19,20 @@
   background-color: #d1ecf1;
   color: #0c5460;
 }
+
+/* Add this to your existing CSS */
+nav {
+  background-color: #f8f9fa;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+nav a {
+  margin-right: 10px;
+  text-decoration: none;
+  color: #007bff;
+}
+
+nav span {
+  margin-right: 10px;
+}

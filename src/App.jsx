@@ -1,12 +1,32 @@
 import { UserProvider, useUser } from "./contexts/UserContext";
 import { useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  Navigate,
+} from "react-router-dom";
 import Blog from "./components/Blog";
 import Login from "./components/Login";
 import CreateBlogPost from "./components/CreateBlogPost";
+import UserList from "./components/UserList";
+import UserView from "./components/UserView"; // Add this import
 import { NotificationProvider } from "./contexts/NotificationContext";
 import "./styles/index.css";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAll } from "./services/blogs";
+
+const BlogList = ({ blogs }) => (
+  <div>
+    {blogs
+      .sort((a, b) => b.likes - a.likes)
+      .map((blog) => (
+        <Blog key={blog.id} blog={blog} />
+      ))}
+    <CreateBlogPost />
+  </div>
+);
 
 const AppContent = () => {
   const { user, dispatch } = useUser();
@@ -40,25 +60,29 @@ const AppContent = () => {
   if (isError) return <div>Error fetching blogs</div>;
 
   return (
-    <div>
-      {user === null ? (
-        <Login />
-      ) : (
-        <div>
-          <h2>blogs</h2>
+    <Router>
+      <div>
+        {user === null ? (
+          <Login />
+        ) : (
           <div>
-            <p>{user.username} is logged in</p>
-            <button onClick={handleLogout}>logout</button>
+            <nav>
+              <Link to="/">blogs</Link>
+              <Link to="/users">users</Link>
+              <span>{user.username} logged in</span>
+              <button onClick={handleLogout}>logout</button>
+            </nav>
+
+            <Routes>
+              <Route path="/users/:id" element={<UserView />} />
+              <Route path="/users" element={<UserList />} />
+              <Route path="/" element={<BlogList blogs={blogs} />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
           </div>
-          {blogs
-            .sort((a, b) => b.likes - a.likes)
-            .map((blog) => (
-              <Blog key={blog.id} blog={blog} />
-            ))}
-          <CreateBlogPost />
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </Router>
   );
 };
 
