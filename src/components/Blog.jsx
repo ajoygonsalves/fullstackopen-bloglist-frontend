@@ -2,15 +2,22 @@ import { useState } from "react";
 import { updateLikes, deleteBlog } from "../services/blogs";
 import PropTypes from "prop-types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNotification } from "../contexts/NotificationContext";
 
 const Blog = ({ blog, user }) => {
   const [visible, setVisible] = useState(false);
   const queryClient = useQueryClient();
+  const { showNotification } = useNotification();
 
   const updateLikesMutation = useMutation({
     mutationFn: updateLikes,
-    onSuccess: () => {
+    onSuccess: (updatedBlog) => {
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
+      showNotification(`Blog '${updatedBlog.title}' liked!`, "success");
+    },
+    onError: (error) => {
+      console.error("Error updating likes:", error);
+      showNotification("Failed to update likes", "error");
     },
   });
 
@@ -18,6 +25,11 @@ const Blog = ({ blog, user }) => {
     mutationFn: deleteBlog,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
+      showNotification(`Blog '${blog.title}' deleted successfully`, "success");
+    },
+    onError: (error) => {
+      console.error("Error deleting blog:", error);
+      showNotification("Failed to delete blog", "error");
     },
   });
 
