@@ -117,7 +117,7 @@ test("CreateBlogPost calls event handler with correct details when new blog is c
   render(
     <NotificationProvider>
       <CreateBlogPost user={user} fetchBlogs={mockFetchBlogs} />
-    </NotificationProvider>
+    </NotificationProvider>,
   );
 
   // Click the "Create new blog post" button to show the form

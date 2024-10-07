@@ -19,7 +19,7 @@ const CreateBlogPost = ({ user, fetchBlogs }) => {
       setUrl("");
       fetchBlogs();
       showNotification(
-        `a new blog ${title} by ${author} with URL ${url} added`
+        `a new blog ${title} by ${author} with URL ${url} added`,
       );
     } catch (error) {
       console.error("Failed to create blog post:", error);
@@ -49,6 +49,7 @@ const CreateBlogPost = ({ user, fetchBlogs }) => {
           <input
             type="text"
             id="title"
+            name="title"
             value={title}
             onChange={({ target }) => setTitle(target.value)}
           />
@@ -58,6 +59,7 @@ const CreateBlogPost = ({ user, fetchBlogs }) => {
           <input
             type="text"
             id="author"
+            name="author"
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
           />
@@ -67,6 +69,7 @@ const CreateBlogPost = ({ user, fetchBlogs }) => {
           <input
             type="text"
             id="url"
+            name="url"
             value={url}
             onChange={({ target }) => setUrl(target.value)}
           />
