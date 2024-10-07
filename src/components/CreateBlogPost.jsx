@@ -1,9 +1,11 @@
+import { useUser } from "../contexts/UserContext";
 import { createBlogPost } from "../services/blogs";
 import { useState } from "react";
 import { useNotification } from "../contexts/NotificationContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const CreateBlogPost = ({ user }) => {
+const CreateBlogPost = () => {
+  const { user } = useUser();
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");

@@ -1,10 +1,12 @@
+import { useUser } from "../contexts/UserContext";
 import { useState } from "react";
 import { updateLikes, deleteBlog } from "../services/blogs";
 import PropTypes from "prop-types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "../contexts/NotificationContext";
 
-const Blog = ({ blog, user }) => {
+const Blog = ({ blog }) => {
+  const { user } = useUser();
   const [visible, setVisible] = useState(false);
   const queryClient = useQueryClient();
   const { showNotification } = useNotification();
@@ -51,7 +53,6 @@ const Blog = ({ blog, user }) => {
     }
   };
 
-  // make sure the toggle button is on the right side of the blog post
   const toggleButtonStyle = {
     display: "flex",
     justifyContent: "flex-start",
@@ -84,7 +85,6 @@ const Blog = ({ blog, user }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
 };
 
 export default Blog;

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { UserProvider, useUser } from "./contexts/UserContext";
+import { useEffect } from "react";
 import Blog from "./components/Blog";
 import Login from "./components/Login";
 import CreateBlogPost from "./components/CreateBlogPost";
@@ -7,17 +8,23 @@ import "./styles/index.css";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAll } from "./services/blogs";
 
-const App = () => {
-  const [user, setUser] = useState(null);
+const AppContent = () => {
+  const { user, dispatch } = useUser();
   const queryClient = useQueryClient();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      dispatch({ type: "LOGIN", payload: user });
     }
-  }, []);
+  }, [dispatch]);
+
+  const handleLogout = () => {
+    dispatch({ type: "LOGOUT" });
+    window.localStorage.removeItem("loggedBlogAppUser");
+    queryClient.clear();
+  };
 
   const {
     data: blogs,
@@ -25,41 +32,43 @@ const App = () => {
     isError,
   } = useQuery({
     queryKey: ["blogs"],
-    queryFn: () => getAll(user),
+    queryFn: getAll,
     enabled: !!user,
   });
-
-  const handleLogout = () => {
-    setUser(null);
-    window.localStorage.removeItem("loggedBlogAppUser");
-    queryClient.clear();
-  };
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error fetching blogs</div>;
 
   return (
-    <NotificationProvider>
-      <div>
-        {user === null ? (
-          <Login setUser={setUser} />
-        ) : (
+    <div>
+      {user === null ? (
+        <Login />
+      ) : (
+        <div>
+          <h2>blogs</h2>
           <div>
-            <h2>blogs</h2>
-            <div>
-              <p>{user.username} is logged in</p>
-              <button onClick={handleLogout}>logout</button>
-            </div>
-            {blogs
-              .sort((a, b) => b.likes - a.likes)
-              .map((blog) => (
-                <Blog key={blog.id} blog={blog} user={user} />
-              ))}
-            <CreateBlogPost user={user} />
+            <p>{user.username} is logged in</p>
+            <button onClick={handleLogout}>logout</button>
           </div>
-        )}
-      </div>
-    </NotificationProvider>
+          {blogs
+            .sort((a, b) => b.likes - a.likes)
+            .map((blog) => (
+              <Blog key={blog.id} blog={blog} />
+            ))}
+          <CreateBlogPost />
+        </div>
+      )}
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <UserProvider>
+      <NotificationProvider>
+        <AppContent />
+      </NotificationProvider>
+    </UserProvider>
   );
 };
 

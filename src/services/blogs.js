@@ -1,14 +1,19 @@
 import axios from "axios";
 const baseUrl = "http://localhost:3111/api/blogs";
 
-const getAll = async (user) => {
+const getAll = async () => {
   try {
-    const request = await axios.get(baseUrl, {
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    });
-    return request.data;
+    const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      const request = await axios.get(baseUrl, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      return request.data;
+    }
+    return [];
   } catch (error) {
     console.error("Error fetching blogs:", error);
     throw error;

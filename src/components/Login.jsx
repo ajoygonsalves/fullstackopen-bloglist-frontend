@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { loginUser } from "../services/users";
 import { useNotification } from "../contexts/NotificationContext";
+import { useUser } from "../contexts/UserContext";
 
-const Login = ({ setUser }) => {
+const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const { dispatch } = useUser();
   const { showNotification } = useNotification();
 
   const handleSubmit = async (e) => {
@@ -14,7 +15,7 @@ const Login = ({ setUser }) => {
       const user = await loginUser({ username, password });
       if (user && user.token) {
         window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
-        setUser(user);
+        dispatch({ type: "LOGIN", payload: user });
         showNotification(`${user.username} logged in`, "success");
         setUsername("");
         setPassword("");
