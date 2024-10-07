@@ -20,6 +20,7 @@ const CreateBlogPost = ({ user, fetchBlogs }) => {
       fetchBlogs();
       showNotification(
         `a new blog ${title} by ${author} with URL ${url} added`,
+        "success",
       );
     } catch (error) {
       console.error("Failed to create blog post:", error);

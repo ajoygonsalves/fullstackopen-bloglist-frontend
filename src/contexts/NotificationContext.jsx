@@ -1,16 +1,30 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useReducer, useContext } from "react";
 import Notification from "../components/Notification";
 
 const NotificationContext = createContext();
 
+const notificationReducer = (state, action) => {
+  switch (action.type) {
+    case "SHOW_NOTIFICATION":
+      return { message: action.payload.message, type: action.payload.type };
+    case "HIDE_NOTIFICATION":
+      return { message: "", type: "" };
+    default:
+      return state;
+  }
+};
+
 export const NotificationProvider = ({ children }) => {
-  const [notification, setNotification] = useState({ message: "", type: "" });
+  const [notification, dispatch] = useReducer(notificationReducer, {
+    message: "",
+    type: "",
+  });
 
   const showNotification = (message, type = "info") => {
-    setNotification({ message, type });
+    dispatch({ type: "SHOW_NOTIFICATION", payload: { message, type } });
 
     setTimeout(() => {
-      setNotification({ message: "", type: "" });
+      dispatch({ type: "HIDE_NOTIFICATION" });
     }, 3000);
   };
 

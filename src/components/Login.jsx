@@ -15,7 +15,7 @@ const Login = ({ setUser }) => {
       if (user && user.token) {
         window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
         setUser(user);
-        showNotification(`${user.username} logged in`);
+        showNotification(`${user.username} logged in`, "success");
         setUsername("");
         setPassword("");
       } else {
