@@ -25,9 +25,19 @@ const UserView = () => {
       {!user.blogs || user.blogs.length === 0 ? (
         <p>No blogs added yet.</p>
       ) : (
-        <ul key={user.id}>
+        <ul>
           {user.blogs.map((blog) => (
-            <li key={blog.id}>{blog.title}</li>
+            <li key={blog.id}>
+              <h4>{blog.title}</h4>
+              <p>Comments: {blog.comments ? blog.comments.length : 0}</p>
+              {blog.comments && blog.comments.length > 0 && (
+                <ul>
+                  {blog.comments.map((comment, index) => (
+                    <li key={index}>{comment}</li>
+                  ))}
+                </ul>
+              )}
+            </li>
           ))}
         </ul>
       )}

@@ -16,13 +16,16 @@ import { NotificationProvider } from "./contexts/NotificationContext";
 import "./styles/index.css";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAll } from "./services/blogs";
+import BlogView from "./components/BlogView";
 
 const BlogList = ({ blogs }) => (
   <div>
     {blogs
       .sort((a, b) => b.likes - a.likes)
       .map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <div key={blog.id}>
+          <Link to={`/blogs/${blog.id}`}>{blog.title}</Link> by {blog.author}
+        </div>
       ))}
     <CreateBlogPost />
   </div>
@@ -76,6 +79,7 @@ const AppContent = () => {
             <Routes>
               <Route path="/users/:id" element={<UserView />} />
               <Route path="/users" element={<UserList />} />
+              <Route path="/blogs/:id" element={<BlogView />} />
               <Route path="/" element={<BlogList blogs={blogs} />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

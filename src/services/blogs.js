@@ -67,4 +67,55 @@ const deleteBlog = async ({ id, user }) => {
   }
 };
 
-export { getAll, createBlogPost, updateLikes, deleteBlog };
+const getBlogById = async (id) => {
+  try {
+    const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      const response = await axios.get(`${baseUrl}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching blog:", error);
+    throw error;
+  }
+};
+
+const addComment = async ({ id, comment }) => {
+  try {
+    console.log("id", id);
+    const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const response = await axios.post(
+        `${baseUrl}/${id}/comments`,
+        { content: comment },
+        config,
+      );
+      console.log("response", response);
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    throw error;
+  }
+};
+
+export {
+  getAll,
+  createBlogPost,
+  updateLikes,
+  deleteBlog,
+  getBlogById,
+  addComment,
+};
